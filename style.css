@@ -1,0 +1,137 @@
+:root {
+  --ink: #0e1f1a;
+  --ink-2: #132922;
+  --paper: #f2ede3;
+  --sage: #8fa69b;
+  --brass: #c8a96a;
+  --rule: #23423a;
+  --max: 720px;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: var(--max); margin: 0 auto; padding: 72px 24px 48px; }
+a { color: var(--paper); text-decoration-color: var(--brass); text-underline-offset: 3px; }
+a:hover { color: var(--brass); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 2px; }
+
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 380;
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  margin: 0.5rem 0 0;
+}
+h1 em { font-style: italic; font-weight: 340; color: var(--brass); }
+h2 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 420;
+  font-size: 1.35rem;
+  letter-spacing: -0.005em;
+  margin: 2.6rem 0 0.6rem;
+}
+.lede { color: var(--sage); font-size: 1.125rem; max-width: 34em; }
+
+/* ── the ledger: dotted-leader rows ───────────────────────── */
+.ledger { margin: 3.2rem 0; padding: 0; list-style: none; }
+.ledger li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9em;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.ledger li:first-child { border-top: 1px solid var(--rule); }
+.ledger .k {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  white-space: nowrap;
+}
+.ledger .leader {
+  flex: 1;
+  border-bottom: 2px dotted var(--rule);
+  transform: translateY(-0.28em);
+  min-width: 2.5em;
+}
+.ledger .v { color: var(--sage); font-size: 0.95rem; text-align: right; max-width: 24em; }
+
+/* ── hero conversion line ─────────────────────────────────── */
+.hero-line {
+  margin: 3.4rem 0 0.4rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1em;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.hero-line .hrs { font-size: clamp(1.3rem, 3.2vw, 1.8rem); color: var(--paper); }
+.hero-line .leader { flex: 1; border-bottom: 2px dotted var(--brass); opacity: 0.65; transform: translateY(-0.32em); }
+.hero-line .amt { font-size: clamp(1.6rem, 4vw, 2.3rem); color: var(--brass); }
+.hero-sub {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: var(--sage);
+  letter-spacing: 0.03em;
+  margin-top: 0.2rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise { opacity: 0; transform: translateY(10px); animation: rise 0.7s cubic-bezier(.2,.7,.2,1) forwards; }
+  .rise.d1 { animation-delay: 0.12s; }
+  .rise.d2 { animation-delay: 0.26s; }
+  .rise.d3 { animation-delay: 0.42s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+}
+
+/* ── prose pages ──────────────────────────────────────────── */
+.prose p, .prose ul { max-width: 38em; }
+.prose ul { padding-left: 1.1rem; }
+.prose li { margin: 0.35rem 0; }
+.date { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.78rem; color: var(--sage); letter-spacing: 0.05em; }
+.klabel {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brass);
+  display: block;
+  margin-top: 2.4rem;
+}
+.klabel + h2 { margin-top: 0.2rem; }
+
+footer {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 28px 24px 64px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 1.6em;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: var(--sage);
+}
+footer a { color: var(--sage); }
+footer .spacer { flex: 1; }
+@media (max-width: 560px) {
+  main { padding-top: 52px; }
+  .ledger .v { max-width: 14em; }
+}

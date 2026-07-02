@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InvoiceBridge — the hours you tracked, billed exactly</title>
+<meta name="description" content="InvoiceBridge turns Jira worklogs into unsent QuickBooks Online invoices. For Jira + QuickBooks Online, on the Atlassian Marketplace.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340..460;1,9..144,320..420&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <p class="eyebrow rise">For Jira + QuickBooks Online</p>
+  <h1 class="rise d1">The hours you tracked,<br><em>billed exactly.</em></h1>
+  <p class="lede rise d2">InvoiceBridge reads the worklogs your team already keeps in Jira and turns them into unsent invoices in your QuickBooks — every line shown to you first, nothing sent on your behalf.</p>
+
+  <div class="hero-line rise d3" aria-label="Example: 3.5 hours at 120 dollars per hour becomes a 420 dollar invoice line">
+    <span class="hrs">3.5h&nbsp;×&nbsp;$120.00</span>
+    <span class="leader" aria-hidden="true"></span>
+    <span class="amt" id="amt">$420.00</span>
+  </div>
+  <p class="hero-sub rise d3">IBT-14&nbsp;&nbsp;Fix login bug — Ana&nbsp;&nbsp;·&nbsp;&nbsp;one line on invoice #1041</p>
+
+  <ul class="ledger rise d3">
+    <li><span class="k">Billed once, ever</span><span class="leader"></span><span class="v">A ledger remembers every invoiced worklog. Double-billing isn't prevented by care — it's impossible.</span></li>
+    <li><span class="k">Unsent by design</span><span class="leader"></span><span class="v">Invoices arrive in QuickBooks as unsent. Tax, numbering, and the send button stay yours.</span></li>
+    <li><span class="k">Nothing in between</span><span class="leader"></span><span class="v">Runs entirely on Atlassian. Your worklogs travel to exactly one place: your own QuickBooks company.</span></li>
+    <li><span class="k">Edits don't hide</span><span class="leader"></span><span class="v">If a worklog changes after it was invoiced, you're told — plainly, before it costs anyone money.</span></li>
+  </ul>
+
+  <p class="rise d3" style="color: var(--sage);">Arriving on the <span style="color: var(--paper);">Atlassian Marketplace</span>. Until then: <a href="mailto:briano@worqflow.org">briano@worqflow.org</a></p>
+</main>
+<footer>
+  <span>© 2026 Worqflow</span>
+  <span class="spacer"></span>
+  <a href="/privacy.html">Privacy</a>
+  <a href="/terms.html">Terms</a>
+  <a href="mailto:briano@worqflow.org">Support</a>
+</footer>
+<script>
+  (function () {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var el = document.getElementById('amt'), target = 420, t0 = null;
+    function tick(t) {
+      if (!t0) t0 = t;
+      var p = Math.min((t - t0) / 900, 1), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = '$' + (target * e).toFixed(2);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    setTimeout(function () { requestAnimationFrame(tick); }, 500);
+  })();
+</script>
+</body>
+</html>
