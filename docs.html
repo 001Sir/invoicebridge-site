@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InvoiceBridge — Documentation &amp; setup</title>
+<meta name="description" content="How InvoiceBridge works, how to install and connect QuickBooks Online, how to configure a Jira project, how to create an invoice from worklogs, and step-by-step instructions to verify every function of the app on a test site.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340..460;1,9..144,320..420&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="stylesheet" href="/style.css">
+<style>
+  main { max-width: 860px; }
+  .topbar {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.78rem; letter-spacing: 0.04em;
+    display: flex; gap: 1.4em; align-items: baseline;
+    padding-bottom: 1.6rem; border-bottom: 1px solid var(--rule);
+  }
+  .topbar a { color: var(--sage); }
+  .topbar .here { color: var(--brass); }
+
+  h2 { scroll-margin-top: 1.5rem; }
+  h3 { font-family: "Fraunces", Georgia, serif; font-weight: 420; font-size: 1.03rem;
+       margin: 2rem 0 0.4rem; color: var(--paper); }
+  p, li { color: var(--sage); }
+  p { max-width: 40em; }
+  strong { color: var(--paper); font-weight: 500; }
+
+  /* section number rule, echoing the ledger leaders */
+  .sec { margin-top: 3.4rem; }
+  .sec > .num {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--brass); display: block;
+  }
+  .sec > .num + h2 { margin-top: 0.2rem; }
+
+  /* table of contents */
+  .toc { margin: 3rem 0 0; padding: 1.3rem 1.5rem; border: 1px solid var(--rule); border-radius: 3px; }
+  .toc h4 { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.7rem;
+            letter-spacing: 0.16em; text-transform: uppercase; color: var(--brass); margin: 0 0 0.9rem; }
+  .toc ol { margin: 0; padding-left: 1.4rem; columns: 2; column-gap: 2.4rem; font-size: 0.95rem; }
+  .toc li { margin: 0 0 0.35rem; }
+  .toc a { color: var(--sage); text-decoration-color: var(--rule); }
+  .toc a:hover { color: var(--brass); }
+
+  /* numbered steps */
+  ol.steps { list-style: none; padding: 0; margin: 1.4rem 0; counter-reset: step; }
+  ol.steps > li {
+    counter-increment: step;
+    display: grid; grid-template-columns: 2.2rem 1fr; gap: 1rem;
+    padding: 0.9rem 0; border-top: 1px solid var(--rule);
+  }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--rule); }
+  ol.steps > li::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.78rem;
+    color: var(--brass); padding-top: 0.28em;
+    grid-column: 1; grid-row: 1;
+  }
+  /* every element after the counter shares the second column, stacked in source order —
+     without this, auto-placement drops the body copy into the 2.2rem number column */
+  ol.steps > li > * { grid-column: 2; }
+  ol.steps .t { color: var(--paper); display: block; margin-bottom: 0.15rem; }
+  ol.steps p { margin: 0; font-size: 0.97rem; max-width: none; }
+
+  ul.body { padding-left: 1.1rem; margin: 0.6rem 0 1rem; }
+  ul.body li { margin: 0.3rem 0; }
+
+  code, kbd {
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.86em;
+    background: var(--ink-2); border: 1px solid var(--rule); border-radius: 2px;
+    padding: 0.08em 0.36em; color: var(--paper);
+  }
+  pre { background: var(--ink-2); border: 1px solid var(--rule); border-radius: 3px;
+        padding: 0.9rem 1.1rem; overflow-x: auto; margin: 0.8rem 0 1.2rem; }
+  pre code { background: none; border: none; padding: 0; font-size: 0.82rem; line-height: 1.6; }
+
+  .note { border-left: 2px solid var(--brass); padding: 0.2rem 0 0.2rem 1.1rem;
+          margin: 1.3rem 0; font-size: 0.97rem; }
+  .note .lbl { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.68rem;
+               letter-spacing: 0.16em; text-transform: uppercase; color: var(--brass); display: block; }
+
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.4rem; font-size: 0.93rem; }
+  th, td { text-align: left; padding: 0.6rem 0.9rem 0.6rem 0; border-bottom: 1px solid var(--rule);
+           vertical-align: top; color: var(--sage); }
+  th { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.7rem;
+       letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); font-weight: 400; }
+  td code { white-space: nowrap; }
+
+  /* expected-result marker inside the verification walkthrough */
+  .expect { display: block; margin-top: 0.4rem; font-size: 0.93rem; color: var(--paper); }
+  .expect::before { content: "Expected  "; font-family: "IBM Plex Mono", ui-monospace, monospace;
+                    font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+                    color: var(--brass); }
+
+  @media (max-width: 640px) {
+    .toc ol { columns: 1; }
+    ol.steps > li { grid-template-columns: 1.8rem 1fr; gap: 0.7rem; }
+    /* the em-based header column and non-wrapping code push the tables wider than
+       the viewport on a phone; let them size to content and wrap instead */
+    .topbar { flex-wrap: wrap; gap: 0.5em 1.1em; }
+    th { width: auto !important; }
+    table { table-layout: auto; }
+    td code { white-space: normal; }
+    code { overflow-wrap: anywhere; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <nav class="topbar">
+    <a href="/">← InvoiceBridge</a>
+    <span class="here">Documentation</span>
+    <span style="flex:1"></span>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+  </nav>
+
+  <p class="eyebrow" style="margin-top:2.6rem">For Jira Cloud + QuickBooks Online</p>
+  <h1>Documentation<br><em>&amp; setup guide.</em></h1>
+  <p class="lede">Everything needed to install InvoiceBridge, connect a QuickBooks Online company, configure a Jira
+    project, and turn tracked worklogs into unsent invoices — plus a step-by-step walkthrough for verifying every
+    function of the app on a test site.</p>
+
+  <div class="toc">
+    <h4>Contents</h4>
+    <ol>
+      <li><a href="#what">What InvoiceBridge is</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#requirements">Requirements</a></li>
+      <li><a href="#connect">Install &amp; connect QuickBooks</a></li>
+      <li><a href="#project">Set up a Jira project</a></li>
+      <li><a href="#invoice">Create an invoice</a></li>
+      <li><a href="#safeguards">What keeps the numbers honest</a></li>
+      <li><a href="#verify">Verifying functionality — step by step</a></li>
+      <li><a href="#permissions">Permissions, data &amp; egress</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#support">Support</a></li>
+    </ol>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <section class="sec" id="what">
+    <span class="num">01</span>
+    <h2>What InvoiceBridge is</h2>
+    <p>InvoiceBridge reads the worklogs your team already logs in Jira and turns the ones you select into an
+      <strong>unsent invoice</strong> in your own QuickBooks Online company. Every line is shown to you before
+      anything is created, and nothing is ever emailed to a customer on your behalf.</p>
+    <p>It is built entirely on Atlassian Forge. There is no Worqflow server in the middle: your worklog data travels
+      from Atlassian to exactly one destination — the QuickBooks company you connect.</p>
+  </section>
+
+  <section class="sec" id="how">
+    <span class="num">02</span>
+    <h2>How it works</h2>
+    <table>
+      <tr><th style="width:9.5em">Read</th><td>For the project and date range you choose, InvoiceBridge finds issues
+        with worklogs in that window, then reads those worklogs: issue key and summary, who logged the time, when, and
+        how long.</td></tr>
+      <tr><th>Price</th><td>Each worklog is priced at the per-project rate, falling back to the site-wide default rate.
+        Hours are rounded to two decimals and amounts are derived from those same rounded hours, so the figure on the
+        invoice always equals QuickBooks' own quantity × unit price.</td></tr>
+      <tr><th>Preview</th><td>The priced rows are shown in a table — date, issue, person, hours, rate, amount — with
+        every row selected by default. You uncheck anything you don't want to bill.</td></tr>
+      <tr><th>Create</th><td>The selected rows become an invoice in QuickBooks with <code>EmailStatus: NotSet</code> —
+        an unsent invoice. Tax, numbering, terms and the send button all stay in QuickBooks, and stay yours.</td></tr>
+      <tr><th>Record</th><td>Every invoiced worklog is written to a ledger held in Atlassian app storage. A worklog that
+        has been invoiced once will never appear as billable again.</td></tr>
+    </table>
+  </section>
+
+  <section class="sec" id="requirements">
+    <span class="num">03</span>
+    <h2>Requirements</h2>
+    <ul class="body">
+      <li><strong>Jira Cloud</strong>, with time tracking in use — InvoiceBridge bills from Jira worklogs.</li>
+      <li>A <strong>QuickBooks Online</strong> company, and an Intuit login with access to it. A QuickBooks Online
+        sandbox company works for evaluation and testing.</li>
+      <li>In QuickBooks: at least one active <strong>customer</strong> and one active <strong>service item</strong>
+        to bill against.</li>
+      <li><strong>Jira administrator</strong> rights to connect QuickBooks (the admin page), and
+        <strong>project administrator</strong> rights on a project to configure and bill it.</li>
+    </ul>
+  </section>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <section class="sec" id="connect">
+    <span class="num">04</span>
+    <h2>Install &amp; connect QuickBooks</h2>
+    <p>Connecting is done once, by a Jira admin, from <strong>Jira Settings → Apps → InvoiceBridge</strong>. The page
+      has three parts, in order.</p>
+
+    <ol class="steps">
+      <li>
+        <span class="t">Install the app</span>
+        <p>Install InvoiceBridge from the Atlassian Marketplace onto your Jira Cloud site. It adds one admin page and
+          one project page; it does not modify issues, workflows or permissions.</p>
+      </li>
+      <li>
+        <span class="t">Connect your Intuit login</span>
+        <p>On the admin page, under <em>1. Your Intuit login</em>, click <strong>Connect Intuit login</strong>. Intuit's
+          own sign-in and consent screen opens; approve access. The connection is per Atlassian user and is held by
+          Atlassian's Forge external-authentication service — InvoiceBridge never sees or stores your Intuit password.
+          The page then reads <em>“✅ Your Atlassian user is connected to Intuit.”</em></p>
+      </li>
+      <li>
+        <span class="t">Point it at your QuickBooks company</span>
+        <p>Under <em>2. QuickBooks company</em>, paste your QuickBooks <strong>Company ID</strong>, choose the
+          environment — <strong>Production</strong> for a real company, <strong>Sandbox</strong> for a developer test
+          company — and click <strong>Validate &amp; save</strong>. InvoiceBridge calls QuickBooks to confirm the ID
+          resolves against your connection and echoes back the company name it found, so a mistyped ID cannot be saved
+          silently.</p>
+      </li>
+      <li>
+        <span class="t">Set site-wide defaults</span>
+        <p>Under <em>3. Defaults</em>, set the default hourly rate used where a project has none, and choose how invoice
+          lines are grouped: <strong>one line per worklog</strong>, or <strong>one line per issue</strong> (worklogs on
+          the same issue at the same rate are merged into a single line). Click <strong>Save defaults</strong>.</p>
+      </li>
+    </ol>
+
+    <div class="note">
+      <span class="lbl">Where to find your Company ID</span>
+      In QuickBooks Online, open the account information panel with the keyboard shortcut
+      <kbd>Cmd</kbd>+<kbd>Option</kbd>+<kbd>?</kbd> — the Company ID is listed there. For a
+      <strong>sandbox</strong> company, it is shown on the Intuit developer portal next to the company, under
+      <em>Dashboard → Sandboxes</em>.
+    </div>
+  </section>
+
+  <section class="sec" id="project">
+    <span class="num">05</span>
+    <h2>Set up a Jira project</h2>
+    <p>Each project you bill is configured once, by a project admin, from that project's
+      <strong>QuickBooks Billing</strong> page in the project menu.</p>
+    <p>On first visit the page shows <em>Set up this project</em>, with customers and service items loaded live from the
+      connected QuickBooks company:</p>
+    <ul class="body">
+      <li><strong>Customer</strong> — the QuickBooks customer this project's invoices are billed to.</li>
+      <li><strong>Service item</strong> — the QuickBooks service item every line is booked against.</li>
+      <li><strong>Rate $/h</strong> — this project's hourly rate. Left at zero, the site-wide default applies.</li>
+      <li><strong>Currency</strong> — must match the currency the QuickBooks customer bills in.</li>
+    </ul>
+    <p>Click <strong>Save</strong>. The settings can be changed later with <strong>Edit settings</strong>.</p>
+  </section>
+
+  <section class="sec" id="invoice">
+    <span class="num">06</span>
+    <h2>Create an invoice</h2>
+    <ol class="steps">
+      <li>
+        <span class="t">Choose the period</span>
+        <p>Set <strong>From</strong> and <strong>To</strong>, then click <strong>Refresh</strong>. The first time, the
+          range defaults to the last 30 days; afterwards <em>From</em> defaults to where the previous invoice ended, so
+          consecutive periods meet without a gap or an overlap.</p>
+      </li>
+      <li>
+        <span class="t">Review the lines</span>
+        <p>Each uninvoiced worklog in the range appears as a row: date, issue, person, hours, rate, amount. Everything
+          is selected by default — uncheck any row you don't want on this invoice. The running
+          <strong>Total selected</strong> updates as you go.</p>
+      </li>
+      <li>
+        <span class="t">Create the unsent invoice</span>
+        <p>Click <strong>Create unsent invoice</strong> — the button also shows how many worklogs are selected, e.g.
+          <em>Create unsent invoice (3 worklogs)</em>. InvoiceBridge re-reads the worklogs and recomputes every amount
+          server-side — the figures posted to QuickBooks are never taken from the browser — then creates the invoice.</p>
+      </li>
+      <li>
+        <span class="t">Review and send in QuickBooks</span>
+        <p>A confirmation shows the new invoice number and total, with an <strong>Open in QuickBooks</strong> link. The
+          invoice is waiting there, unsent. Apply tax, adjust wording, and send it when you're ready.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <section class="sec" id="safeguards">
+    <span class="num">07</span>
+    <h2>What keeps the numbers honest</h2>
+    <table>
+      <tr><th style="width:11em">No double billing</th><td>Every invoiced worklog is recorded in a ledger. Invoiced
+        worklogs are filtered out of later previews, and an attempt to bill one anyway is refused with the offending
+        worklog ids named.</td></tr>
+      <tr><th>Edits don't hide</th><td>If a worklog's time is changed after it was invoiced, the preview raises a drift
+        warning naming the issue and both figures — <em>invoiced 3.5h → now 4h</em> — so you can decide what to do in
+        QuickBooks. It is never silently re-billed.</td></tr>
+      <tr><th>Interrupted attempts</th><td>Invoice creation writes an intent record first and marks each invoice with a
+        private-note marker. If a run is interrupted, the next attempt finds and adopts the invoice it already created
+        instead of creating a second one. Anything still unresolved after an hour is surfaced as a warning to check
+        QuickBooks before retrying.</td></tr>
+      <tr><th>Currency</th><td>If the project's configured currency doesn't match what the QuickBooks customer bills in,
+        creation stops with an explicit message rather than posting a wrongly-denominated invoice.</td></tr>
+      <tr><th>Nothing is sent</th><td>Invoices are created with <code>EmailStatus: NotSet</code>. InvoiceBridge has no
+        code path that emails an invoice.</td></tr>
+      <tr><th>Permission checks</th><td>Before any privileged read or write, the app verifies the calling user's own
+        Jira permission — project administrator for project billing actions, Jira administrator for the connection
+        settings — and fails closed if that check cannot be completed.</td></tr>
+    </table>
+  </section>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <section class="sec" id="verify">
+    <span class="num">08</span>
+    <h2>Verifying functionality — step by step</h2>
+    <p>This walkthrough exercises every function of the app end to end on a test Jira site against a QuickBooks Online
+      <strong>sandbox</strong> company. It takes about fifteen minutes.</p>
+
+    <div class="note">
+      <span class="lbl">Test credentials</span>
+      A QuickBooks Online sandbox company and a dedicated login are available for Marketplace review. Those credentials
+      are supplied on the review ticket rather than published on this page. Reviewers and evaluators can also request
+      them at <a href="mailto:briano@worqflow.org">briano@worqflow.org</a>, or use any QuickBooks Online sandbox
+      company of their own — the app has a Sandbox environment setting for exactly this.
+      <br><br>
+      The sandbox company provided for review already contains active customers and service items, so there is nothing
+      to prepare on the QuickBooks side. If you use a sandbox of your own instead, add at least one active customer and
+      one active service item first — the app bills against them.
+    </div>
+
+    <div class="note">
+      <span class="lbl">You will need two Jira users</span>
+      The final check verifies that permissions are enforced, which requires a second Jira user who is <em>not</em> an
+      administrator. If your test site has only one account, either invite a second free account, or temporarily remove
+      your own user from the <code>jira-administrators</code> group and from the project's administrator role for that
+      step, then restore it. Every other step needs only the admin account.
+    </div>
+
+    <h3>Prepare test data in Jira</h3>
+    <ol class="steps">
+      <li>
+        <span class="t">Create a project and an issue</span>
+        <p>Create (or pick) a Jira project, and create an issue in it — for example
+          <code>IBT-14 · Fix login bug</code>.</p>
+      </li>
+      <li>
+        <span class="t">Log work on it</span>
+        <p>On the issue, use <strong>Log work</strong> to record time — for example <code>3h 30m</code>, dated today.
+          Log a second entry on another issue if you want to see multiple lines.</p>
+      </li>
+    </ol>
+
+    <h3>Connect QuickBooks</h3>
+    <ol class="steps">
+      <li>
+        <span class="t">Open the admin page</span>
+        <p>As a Jira admin, go to <strong>Settings → Apps → InvoiceBridge</strong>.</p>
+        <span class="expect">The page loads with “Not connected yet.”</span>
+      </li>
+      <li>
+        <span class="t">Connect the Intuit login</span>
+        <p>Click <strong>Connect Intuit login</strong> and complete Intuit's sign-in and consent screen with the
+          sandbox credentials.</p>
+        <span class="expect">The page returns to “✅ Your Atlassian user is connected to Intuit.”</span>
+      </li>
+      <li>
+        <span class="t">Validate the company</span>
+        <p>Paste the sandbox <strong>Company ID</strong>, set Environment to <strong>Sandbox</strong>, and click
+          <strong>Validate &amp; save</strong>.</p>
+        <span class="expect">A green confirmation naming the sandbox company, e.g. <em>✅ Connected to “Sandbox Company
+          US 9b2f”</em> — proof the app really reached QuickBooks. A deliberately wrong Company ID is rejected instead
+          of saved.</span>
+      </li>
+      <li>
+        <span class="t">Save defaults</span>
+        <p>Set a default rate — say <code>120</code> — leave grouping at <em>One line per worklog</em>, and click
+          <strong>Save defaults</strong>.</p>
+        <span class="expect">The values persist across a page reload.</span>
+      </li>
+    </ol>
+
+    <h3>Configure the project and bill it</h3>
+    <ol class="steps">
+      <li>
+        <span class="t">Open the project's billing page</span>
+        <p>Go to the project and open <strong>QuickBooks Billing</strong> from the project menu.</p>
+        <span class="expect">A <em>Set up this project</em> panel, with the Customer and Service item dropdowns
+          populated from the sandbox company — confirming live reads from QuickBooks.</span>
+      </li>
+      <li>
+        <span class="t">Configure it</span>
+        <p>Pick a customer and a service item, set the rate to <code>120</code>, leave currency <code>USD</code>, and
+          click <strong>Save</strong>.</p>
+      </li>
+      <li>
+        <span class="t">Preview the worklogs</span>
+        <p>Set <strong>From</strong> and <strong>To</strong> to cover the day you logged work, then click
+          <strong>Refresh</strong>.</p>
+        <span class="expect">A row per logged worklog — <code>3.5</code> hours at <code>$120.00/h</code> for
+          <code>$420.00</code> — and a matching <em>Total selected</em>.</span>
+      </li>
+      <li>
+        <span class="t">Create the invoice</span>
+        <p>Leave the rows checked and click <strong>Create unsent invoice</strong>.</p>
+        <span class="expect">A green banner naming the new invoice number and total, with an <strong>Open in
+          QuickBooks</strong> link.</span>
+      </li>
+      <li>
+        <span class="t">Verify it in QuickBooks</span>
+        <p>Follow that link into the sandbox company and open the invoice.</p>
+        <span class="expect">An invoice for the right customer and total, <strong>unsent</strong>, with one line per
+          worklog described as <code>IBT-14 Fix login bug — Ana, 3.5h × $120.00</code>, and an
+          <code>InvoiceBridge marker: IB-…</code> string in the private note.</span>
+      </li>
+    </ol>
+
+    <h3>Verify the safeguards</h3>
+    <ol class="steps">
+      <li>
+        <span class="t">A worklog is billed once</span>
+        <p>Back in Jira, click <strong>Refresh</strong> on the billing page.</p>
+        <span class="expect">The worklogs you just invoiced are gone from the table — “No uninvoiced worklogs in this
+          range.” They cannot be billed a second time.</span>
+      </li>
+      <li>
+        <span class="t">Edits to invoiced work are surfaced</span>
+        <p>In Jira, edit the worklog you already invoiced — change <code>3h 30m</code> to <code>4h</code> — then
+          <strong>Refresh</strong>.</p>
+        <span class="expect">An amber drift warning: <em>1 already-invoiced worklog(s) changed since invoicing: IBT-14
+          (3.5h → 4h)</em>. The row is not silently re-billed.</span>
+      </li>
+      <li>
+        <span class="t">Line grouping</span>
+        <p>Log two worklogs on the <em>same</em> issue, switch the admin default to <em>One line per issue</em>, then
+          preview and invoice them.</p>
+        <span class="expect">One merged invoice line carrying the summed hours, instead of two.</span>
+      </li>
+      <li>
+        <span class="t">Permissions are enforced</span>
+        <p>As a Jira user who is <em>not</em> a project admin, open the project's QuickBooks Billing page. As a user who
+          is not a Jira admin, open the InvoiceBridge admin page.</p>
+        <span class="expect">Both refuse with a permission error rather than returning data. Billing actions require
+          project administrator on that project; connection settings require Jira administrator.</span>
+      </li>
+      <li>
+        <span class="t">Nothing is emailed</span>
+        <p>Check the invoice's status in QuickBooks.</p>
+        <span class="expect">It remains unsent until a human sends it from QuickBooks.</span>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <section class="sec" id="permissions">
+    <span class="num">09</span>
+    <h2>Permissions, data &amp; egress</h2>
+
+    <h3>Atlassian scopes</h3>
+    <table>
+      <tr><th style="width:12em">read:jira-work</th><td>Find issues with worklogs in the chosen project and date range,
+        and read those worklogs — issue key and summary, time logged, when, and by whom. Also backs the caller's own
+        permission check before any privileged action.</td></tr>
+      <tr><th>read:jira-user</th><td>Resolve the display name of the person who logged the time, so an invoice line can
+        say who did the work, and identify the admin who connected QuickBooks.</td></tr>
+      <tr><th>storage:app</th><td>Hold the app's own state: the QuickBooks connection and defaults, per-project billing
+        settings, and the ledger of which worklogs have already been invoiced.</td></tr>
+    </table>
+
+    <h3>What leaves Atlassian, and where it goes</h3>
+    <p>InvoiceBridge sends data to <strong>Intuit only</strong> — to the QuickBooks Online company that your own
+      administrator connected. There is no Worqflow-operated server, no analytics endpoint, and no other third party.</p>
+    <table>
+      <tr><th style="width:20em">appcenter.intuit.com</th><td>Intuit's OAuth authorization screen, where your admin
+        signs in and grants access. Handled by Atlassian's Forge external-auth service.</td></tr>
+      <tr><th>oauth.platform.intuit.com</th><td>Token exchange and refresh.</td></tr>
+      <tr><th>accounts.platform.intuit.com</th><td>Reads the connected Intuit identity (the OpenID profile) so the
+        connection can be attributed.</td></tr>
+      <tr><th>quickbooks.api.intuit.com<br>sandbox-quickbooks.api.intuit.com</th><td>The QuickBooks Online accounting
+        API — production and sandbox respectively. Reads company info and preferences, the active customer and service
+        item lists, and — only when recovering an interrupted attempt — searches that customer's invoices in a narrow
+        date window to find one it may already have created. Creates the invoice.</td></tr>
+    </table>
+    <p>The content of an invoice line is the data that reaches Intuit: <strong>issue key, issue summary, the display
+      name of the person who logged the time, hours and rate</strong>. Nothing else from Jira is transmitted — no
+      comments, no attachments, no other issue fields, and no data about issues without billed worklogs.</p>
+    <p>One piece of app-generated data is written alongside it: each invoice carries
+      <code>InvoiceBridge marker: IB-…</code> in its QuickBooks private note. The marker is a one-way hash of the
+      project key and the invoiced worklog ids — it identifies the invoice as one of ours on a later recovery attempt,
+      and carries no readable Jira content.</p>
+
+    <h3>Data kept, and for how long</h3>
+    <ul class="body">
+      <li>App state lives in Atlassian's own storage for the installation: the connection settings, per-project billing
+        configuration, and the invoiced-worklog ledger.</li>
+      <li>The ledger is what makes double-billing impossible; it holds worklog ids, the invoice each belongs to, the
+        amount and the hours as invoiced.</li>
+      <li>Uninstalling the app removes this state along with the installation. Invoices already created stay in your
+        QuickBooks company, where they belong.</li>
+      <li>Intuit's own OAuth tokens are held by Atlassian's Forge external-auth service, not by the app.</li>
+    </ul>
+    <p>See <a href="/privacy.html">Privacy</a> for the full statement.</p>
+  </section>
+
+  <section class="sec" id="troubleshooting">
+    <span class="num">10</span>
+    <h2>Troubleshooting</h2>
+    <table>
+      <tr><th style="width:16em">“QuickBooks is not configured”</th><td>No company has been connected yet, or the
+        connection was made in a different environment. A Jira admin should complete the admin page.</td></tr>
+      <tr><th>Customer / service item dropdowns are empty</th><td>Your own Intuit login isn't connected yet, or the
+        connected company has no active customers or service items. Connect on the admin page, and check the company in
+        QuickBooks.</td></tr>
+      <tr><th>“Could not validate Company ID”</th><td>The Company ID doesn't match the connected Intuit account, or the
+        environment is set to Production for a sandbox company (or the reverse).</td></tr>
+      <tr><th>Currency mismatch</th><td>The project's configured currency differs from the QuickBooks customer's
+        currency. Change one so they agree.</td></tr>
+      <tr><th>“Refusing: … already invoiced”</th><td>Working as designed — those worklogs are already on an invoice.
+        Refresh the preview to see what is genuinely outstanding.</td></tr>
+      <tr><th>An earlier attempt may not have completed</th><td>Check QuickBooks for an invoice matching the project
+        before creating another, then retry — the retry adopts the existing invoice rather than duplicating it.</td></tr>
+      <tr><th>No rows in the preview</th><td>There are no <em>uninvoiced</em> worklogs in that range. Widen the dates,
+        or confirm the work was logged on issues in this project.</td></tr>
+    </table>
+  </section>
+
+  <section class="sec" id="support">
+    <span class="num">11</span>
+    <h2>Support</h2>
+    <p>Email <a href="mailto:briano@worqflow.org">briano@worqflow.org</a>. Support hours are Monday–Friday,
+      9:00&nbsp;AM–5:00&nbsp;PM America/Chicago, with a target first response within one business day.</p>
+    <p>When reporting a problem, the project key, the date range, and the exact message shown on screen are usually
+      enough to identify it.</p>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 Worqflow</span>
+  <span class="spacer"></span>
+  <a href="/">Home</a>
+  <a href="/privacy.html">Privacy</a>
+  <a href="/terms.html">Terms</a>
+  <a href="mailto:briano@worqflow.org">Support</a>
+</footer>
+</body>
+</html>
